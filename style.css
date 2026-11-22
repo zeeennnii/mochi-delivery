@@ -1,24 +1,159 @@
-* { box-sizing: border-box; }
-  body {
-    margin: 0; min-height: 100vh; display: grid; place-items: center;
-    padding: 18px; font-family: system-ui, Arial, sans-serif;
-    color: #45344d; background: linear-gradient(135deg,#fff1f5,#f1eaff);
-  }
-  .wrap { width: min(100%, 620px); text-align: center; }
-  h1 { margin: 0 0 5px; color: #7b4b91; letter-spacing: .5px; }
-  .sub { margin: 0 0 16px; color: #786b82; }
-  .panel {
-    background: #fff; border: 2px solid #eadcf2; border-radius: 20px;
-    padding: 14px; box-shadow: 0 12px 30px #8e6ca51c;
-  }
-  .stats { display: flex; justify-content: space-around; gap: 8px; margin-bottom: 10px; font-weight: 700; }
-  .stat { background: #f8f0fc; border-radius: 12px; padding: 8px 12px; flex: 1; }
-  canvas { display: block; width: 100%; height: auto; border-radius: 14px; background: #fff8ed; touch-action: none; }
-  button {
-    border: 0; border-radius: 12px; padding: 11px 18px; margin: 10px 4px 0;
-    color: white; background: #9868b4; font-weight: 700; font-size: 15px; cursor: pointer;
-  }
-  button:hover { background: #80549b; }
-  .controls { color: #786b82; font-size: 13px; margin-top: 10px; }
-  .touch { display:flex; justify-content:center; gap:18px; margin-top:8px; }
-  .touch button { min-width:74px; font-size:20px; margin-top:4px; }
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 22px;
+
+    font-family: 'Trebuchet MS', system-ui, sans-serif;
+    color: #45344d;
+
+    background:
+        radial-gradient(circle at top left, #fff1f5, transparent 45%),
+        linear-gradient(135deg, #fceafa, #f1eaff);
+}
+
+.wrap {
+    width: min(100%, 680px);
+    text-align: center;
+}
+
+h1 {
+    margin: 0 0 6px;
+    color: #8551a0;
+    font-size: clamp(28px, 5vw, 38px);
+    letter-spacing: 1px;
+}
+
+.sub {
+    margin: 0 0 18px;
+    color: #786b82;
+    font-size: 15px;
+}
+
+.panel {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid #eadcf2;
+    border-radius: 24px;
+
+    padding: 16px;
+
+    box-shadow:
+        0 15px 35px rgba(126, 79, 151, 0.12),
+        0 3px 10px rgba(126, 79, 151, 0.05);
+}
+
+.stats {
+    display: flex;
+    justify-content: space-around;
+    gap: 9px;
+    margin-bottom: 12px;
+}
+
+.stat {
+    flex: 1;
+    padding: 10px 5px;
+
+    background: #f8effb;
+    border: 1px solid #f0e1f5;
+    border-radius: 13px;
+
+    color: #634477;
+    font-weight: 800;
+    font-size: 14px;
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+
+    border-radius: 15px;
+    border: 1px solid #f4e8df;
+
+    background: #fff8ed;
+    touch-action: none;
+}
+
+button {
+    border: none;
+    border-radius: 13px;
+
+    padding: 12px 20px;
+    margin: 10px 4px 0;
+
+    color: white;
+    background: #9868b4;
+
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow: 0 4px 0 #80549b;
+    transition: 0.2s ease;
+}
+
+button:hover {
+    background: #80549b;
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(2px);
+    box-shadow: none;
+}
+
+.controls {
+    color: #786b82;
+    font-size: 13px;
+    margin-top: 13px;
+}
+
+.touch {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 8px;
+}
+
+.touch button {
+    min-width: 75px;
+    font-size: 20px;
+    margin-top: 5px;
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 12px;
+    }
+
+    .panel {
+        padding: 10px;
+        border-radius: 18px;
+    }
+
+    .stats {
+        gap: 5px;
+    }
+
+    .stat {
+        font-size: 12px;
+        padding: 9px 3px;
+    }
+
+    button {
+        padding: 11px 15px;
+        font-size: 13px;
+    }
+
+    .controls {
+        font-size: 11px;
+    }
+}
