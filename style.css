@@ -1,61 +1,235 @@
 
-/* Bakery-themed game panel */
-.panel {
-    background: #fffdfb;
-    border: 3px solid #eddaef;
-    border-radius: 27px;
-    padding: 17px;
-
-    box-shadow:
-        0 12px 30px rgba(133, 81, 160, 0.13),
-        inset 0 0 15px rgba(255, 231, 247, 0.5);
+* {
+    box-sizing: border-box;
 }
 
-/* Cute title */
+body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 25px 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Trebuchet MS", Arial, sans-serif;
+    background:
+        radial-gradient(circle at 15% 20%, #ffe6ed 0 8%, transparent 9%),
+        radial-gradient(circle at 85% 80%, #ffe6ed 0 8%, transparent 9%),
+        #fff0f4;
+    color: #80545c;
+}
+
+.page {
+    width: 100%;
+    max-width: 650px;
+    margin: auto;
+    text-align: center;
+}
+
+header {
+    margin-bottom: 20px;
+}
+
+.subtitle {
+    color: #d88a9c;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 3px;
+}
+
 h1 {
-    color: #9259a8;
-    text-shadow: 2px 3px 0 #f4d9ee;
-    letter-spacing: 1.5px;
+    margin: 8px 0;
+    color: #d77e95;
+    font-size: clamp(32px, 7vw, 46px);
+    text-shadow: 2px 3px #ffe0e8;
 }
 
-/* Decorative stats */
+.description {
+    margin: 5px 0;
+    color: #a87980;
+}
+
+.panel {
+    padding: 20px;
+    background: #fffdfb;
+    border: 3px solid #edda;
+    border-color: #eddae0;
+    border-radius: 22px;
+    box-shadow: 0 8px 22px #d99aaa30;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
 .stat {
-    background: linear-gradient(
-        135deg,
-        #fff0f8,
-        #f2e8ff
-    );
-
-    border: 2px solid #f0dff4;
-    border-radius: 15px;
-    color: #704b83;
+    padding: 10px 5px;
+    background: #fff0f3;
+    border: 2px solid #f5d5de;
+    border-radius: 13px;
 }
 
-/* Game canvas */
+.stat span {
+    display: block;
+    margin-bottom: 5px;
+    color: #bd8290;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.stat strong {
+    color: #d77e95;
+    font-size: 23px;
+}
+
+.game-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border: 4px solid #edc5d0;
+    border-radius: 15px;
+    background: #fff6f2;
+}
+
 canvas {
-    border: 3px solid #efd9e9;
-    border-radius: 19px;
-
-    box-shadow:
-        0 5px 14px rgba(125, 83, 139, 0.10);
+    display: block;
+    width: 100%;
+    height: auto;
 }
 
-/* Bakery buttons */
-button {
-    background: linear-gradient(
-        135deg,
-        #bb83d0,
-        #9160ad
-    );
+.game-message {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    background: #fff7f0d9;
+    color: #a96d7b;
+    pointer-events: none;
+}
 
-    border-radius: 15px;
-    box-shadow: 0 4px 0 #754b91;
+.game-message.hidden {
+    display: none;
+}
+
+.game-message h2 {
+    margin: 0 0 8px;
+    color: #d77e95;
+    font-size: clamp(19px, 4vw, 26px);
+}
+
+.game-message p {
+    margin: 5px;
+}
+
+.game-message .hint {
+    font-size: 13px;
+    color: #b58b91;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 17px;
+}
+
+button {
+    border: none;
+    border-radius: 12px;
+    padding: 12px 23px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.15s, filter 0.15s;
 }
 
 button:hover {
-    background: linear-gradient(
-        135deg,
-        #d09ce0,
-        #a875c1
-    );
+    filter: brightness(1.05);
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+.start-button {
+    background: #e994aa;
+    color: white;
+    box-shadow: 0 4px #cf788f;
+}
+
+.restart-button {
+    background: #f8dce4;
+    color: #a96d7b;
+    box-shadow: 0 4px #e9c0cb;
+}
+
+.mobile-controls {
+    display: none;
+    justify-content: center;
+    gap: 25px;
+    margin-top: 14px;
+}
+
+.mobile-controls button {
+    width: 65px;
+    height: 48px;
+    background: #f8dce4;
+    color: #a96d7b;
+    font-size: 20px;
+}
+
+.instructions {
+    margin-top: 20px;
+    padding: 13px;
+    text-align: left;
+    background: #fff5f2;
+    border-radius: 13px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.instructions h3 {
+    margin: 0 0 8px;
+    color: #d77e95;
+}
+
+.instructions p {
+    margin: 5px 0;
+}
+
+footer {
+    margin-top: 18px;
+    color: #c18b97;
+    font-size: 12px;
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 18px 10px;
+        align-items: flex-start;
+    }
+
+    .panel {
+        padding: 12px;
+    }
+
+    .mobile-controls {
+        display: flex;
+    }
+
+    button {
+        padding: 12px 17px;
+        font-size: 12px;
+    }
+
+    .instructions {
+        font-size: 12px;
+    }
 }
