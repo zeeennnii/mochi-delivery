@@ -1,159 +1,61 @@
 
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    min-height: 100vh;
-    display: grid;
-    place-items: center;
-    padding: 22px;
-
-    font-family: 'Trebuchet MS', system-ui, sans-serif;
-    color: #45344d;
-
-    background:
-        radial-gradient(circle at top left, #fff1f5, transparent 45%),
-        linear-gradient(135deg, #fceafa, #f1eaff);
-}
-
-.wrap {
-    width: min(100%, 680px);
-    text-align: center;
-}
-
-h1 {
-    margin: 0 0 6px;
-    color: #8551a0;
-    font-size: clamp(28px, 5vw, 38px);
-    letter-spacing: 1px;
-}
-
-.sub {
-    margin: 0 0 18px;
-    color: #786b82;
-    font-size: 15px;
-}
-
+/* Bakery-themed game panel */
 .panel {
-    background: rgba(255, 255, 255, 0.95);
-    border: 2px solid #eadcf2;
-    border-radius: 24px;
-
-    padding: 16px;
+    background: #fffdfb;
+    border: 3px solid #eddaef;
+    border-radius: 27px;
+    padding: 17px;
 
     box-shadow:
-        0 15px 35px rgba(126, 79, 151, 0.12),
-        0 3px 10px rgba(126, 79, 151, 0.05);
+        0 12px 30px rgba(133, 81, 160, 0.13),
+        inset 0 0 15px rgba(255, 231, 247, 0.5);
 }
 
-.stats {
-    display: flex;
-    justify-content: space-around;
-    gap: 9px;
-    margin-bottom: 12px;
+/* Cute title */
+h1 {
+    color: #9259a8;
+    text-shadow: 2px 3px 0 #f4d9ee;
+    letter-spacing: 1.5px;
 }
 
+/* Decorative stats */
 .stat {
-    flex: 1;
-    padding: 10px 5px;
+    background: linear-gradient(
+        135deg,
+        #fff0f8,
+        #f2e8ff
+    );
 
-    background: #f8effb;
-    border: 1px solid #f0e1f5;
-    border-radius: 13px;
-
-    color: #634477;
-    font-weight: 800;
-    font-size: 14px;
+    border: 2px solid #f0dff4;
+    border-radius: 15px;
+    color: #704b83;
 }
 
+/* Game canvas */
 canvas {
-    display: block;
-    width: 100%;
-    height: auto;
+    border: 3px solid #efd9e9;
+    border-radius: 19px;
+
+    box-shadow:
+        0 5px 14px rgba(125, 83, 139, 0.10);
+}
+
+/* Bakery buttons */
+button {
+    background: linear-gradient(
+        135deg,
+        #bb83d0,
+        #9160ad
+    );
 
     border-radius: 15px;
-    border: 1px solid #f4e8df;
-
-    background: #fff8ed;
-    touch-action: none;
-}
-
-button {
-    border: none;
-    border-radius: 13px;
-
-    padding: 12px 20px;
-    margin: 10px 4px 0;
-
-    color: white;
-    background: #9868b4;
-
-    font-family: inherit;
-    font-size: 15px;
-    font-weight: 800;
-
-    cursor: pointer;
-
-    box-shadow: 0 4px 0 #80549b;
-    transition: 0.2s ease;
+    box-shadow: 0 4px 0 #754b91;
 }
 
 button:hover {
-    background: #80549b;
-    transform: translateY(-2px);
-}
-
-button:active {
-    transform: translateY(2px);
-    box-shadow: none;
-}
-
-.controls {
-    color: #786b82;
-    font-size: 13px;
-    margin-top: 13px;
-}
-
-.touch {
-    display: flex;
-    justify-content: center;
-    gap: 18px;
-    margin-top: 8px;
-}
-
-.touch button {
-    min-width: 75px;
-    font-size: 20px;
-    margin-top: 5px;
-}
-
-@media (max-width: 480px) {
-    body {
-        padding: 12px;
-    }
-
-    .panel {
-        padding: 10px;
-        border-radius: 18px;
-    }
-
-    .stats {
-        gap: 5px;
-    }
-
-    .stat {
-        font-size: 12px;
-        padding: 9px 3px;
-    }
-
-    button {
-        padding: 11px 15px;
-        font-size: 13px;
-    }
-
-    .controls {
-        font-size: 11px;
-    }
+    background: linear-gradient(
+        135deg,
+        #d09ce0,
+        #a875c1
+    );
 }
