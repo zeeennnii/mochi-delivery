@@ -1,0 +1,24 @@
+* { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: grid; place-items: center;
+    padding: 18px; font-family: system-ui, Arial, sans-serif;
+    color: #45344d; background: linear-gradient(135deg,#fff1f5,#f1eaff);
+  }
+  .wrap { width: min(100%, 620px); text-align: center; }
+  h1 { margin: 0 0 5px; color: #7b4b91; letter-spacing: .5px; }
+  .sub { margin: 0 0 16px; color: #786b82; }
+  .panel {
+    background: #fff; border: 2px solid #eadcf2; border-radius: 20px;
+    padding: 14px; box-shadow: 0 12px 30px #8e6ca51c;
+  }
+  .stats { display: flex; justify-content: space-around; gap: 8px; margin-bottom: 10px; font-weight: 700; }
+  .stat { background: #f8f0fc; border-radius: 12px; padding: 8px 12px; flex: 1; }
+  canvas { display: block; width: 100%; height: auto; border-radius: 14px; background: #fff8ed; touch-action: none; }
+  button {
+    border: 0; border-radius: 12px; padding: 11px 18px; margin: 10px 4px 0;
+    color: white; background: #9868b4; font-weight: 700; font-size: 15px; cursor: pointer;
+  }
+  button:hover { background: #80549b; }
+  .controls { color: #786b82; font-size: 13px; margin-top: 10px; }
+  .touch { display:flex; justify-content:center; gap:18px; margin-top:8px; }
+  .touch button { min-width:74px; font-size:20px; margin-top:4px; }
