@@ -2,10 +2,10 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-const scoreDisplay = document.getElementById("score");
-const livesDisplay = document.getElementById("lives");
-const timerDisplay = document.getElementById("timer");
-const message = document.getElementById("message");
+const scoreText = document.getElementById("score");
+const livesText = document.getElementById("lives");
+const timerText = document.getElementById("timer");
+const message = document.getElementById("gameMessage");
 
 const startBtn = document.getElementById("startBtn");
 const restartBtn = document.getElementById("restartBtn");
@@ -20,253 +20,198 @@ let lives = 3;
 let timeLeft = 45;
 
 let gameRunning = false;
-let gameOver = false;
+let gameStarted = false;
 
 let objects = [];
-let animationId = null;
 let lastTime = 0;
 let spawnTimer = 0;
 let elapsedTime = 0;
-
-let powerUpTimer = 0;
-let invincibleTimer = 0;
-
-const player = {
-    x: WIDTH / 2 - 38,
-    y: HEIGHT - 65,
-    width: 76,
-    height: 25,
-    speed: 6
-};
+let animationId = null;
 
 const keys = {
     left: false,
     right: false
 };
 
-function roundedRect(x, y, width, height, radius, color) {
-    ctx.fillStyle = color;
-    ctx.beginPath();
+const player = {
+    x: WIDTH / 2 - 45,
+    y: HEIGHT - 55,
+    width: 90,
+    height: 25,
+    speed: 6,
+    normalWidth: 90,
+    powerUpUntil: 0
+};
 
-    ctx.moveTo(x + radius, y);
-    ctx.lineTo(x + width - radius, y);
-    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-
-    ctx.lineTo(x + width, y + height - radius);
-    ctx.quadraticCurveTo(
-        x + width,
-        y + height,
-        x + width - radius,
-        y + height
-    );
-
-    ctx.lineTo(x + radius, y + height);
-    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-
-    ctx.lineTo(x, y + radius);
-    ctx.quadraticCurveTo(x, y, x + radius, y);
-
-    ctx.closePath();
-    ctx.fill();
-}
-
+// Draw the bakery background
 function drawBackground() {
-    ctx.clearRect(0, 0, WIDTH, HEIGHT);
-
-    ctx.fillStyle = "#fff4e6";
+    ctx.fillStyle = "#fff6f2";
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-    // Checkerboard bakery floor
-    const tile = 42;
-
-    for (let y = 0; y < HEIGHT; y += tile) {
-        for (let x = 0; x < WIDTH; x += tile) {
-            if (
-                (Math.floor(x / tile) + Math.floor(y / tile)) % 2 === 0
-            ) {
-                ctx.fillStyle = "rgba(239, 205, 222, 0.20)";
-                ctx.fillRect(x, y, tile, tile);
-            }
-        }
+    // Background stripes
+    for (let x = 0; x < WIDTH; x += 45) {
+        ctx.fillStyle = x % 90 === 0 ? "#fff0ec" : "#fff6f2";
+        ctx.fillRect(x, 0, 22, HEIGHT);
     }
 
-    // Bakery shelves
-    roundedRect(12, 42, 75, 12, 6, "#d5a47e");
-    roundedRect(WIDTH - 87, 42, 75, 12, 6, "#d5a47e");
+    // Decorative stars
+    ctx.font = "18px Arial";
+    ctx.fillStyle = "#efc4cf";
 
-    // Decorative jars
-    ["#e8a9c5", "#b9a4db", "#f3c58b"].forEach((color, i) => {
-        roundedRect(18 + i * 23, 22, 15, 18, 5, color);
-        roundedRect(WIDTH - 84 + i * 23, 22, 15, 18, 5, color);
-    });
+    ctx.fillText("✦", 35, 45);
+    ctx.fillText("♡", 465, 75);
+    ctx.fillText("✧", 85, 150);
+    ctx.fillText("♡", 420, 190);
+    ctx.fillText("✦", 480, 310);
 
-    // Hanging lights
-    for (let i = 0; i < 5; i++) {
-        const x = 65 + i * (WIDTH - 130) / 4;
+    // Bakery floor
+    ctx.fillStyle = "#f4d5c8";
+    ctx.fillRect(0, HEIGHT - 18, WIDTH, 18);
 
-        ctx.strokeStyle = "#d8b9a8";
-        ctx.lineWidth = 2;
+    ctx.fillStyle = "#eabfae";
+    ctx.fillRect(0, HEIGHT - 18, WIDTH, 3);
+}
+
+// Draw a mochi
+function drawMochi(x, y, size = 1) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(size, size);
+
+    // Shadow
+    ctx.fillStyle = "#e8c4c0";
+    ctx.beginPath();
+    ctx.ellipse(0, 13, 20, 7, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Mochi body
+    ctx.fillStyle = "#f8cbd7";
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 21, 17, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Highlight
+    ctx.fillStyle = "#ffeaf0";
+    ctx.beginPath();
+    ctx.ellipse(-7, -7, 7, 4, -0.4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Face
+    ctx.fillStyle = "#80545c";
+    ctx.beginPath();
+    ctx.arc(-7, 1, 2, 0, Math.PI * 2);
+    ctx.arc(7, 1, 2, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = "#80545c";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(0, 5, 4, 0.1, Math.PI - 0.1);
+    ctx.stroke();
+
+    ctx.restore();
+}
+
+// Draw a puddle
+function drawPuddle(x, y) {
+    ctx.save();
+    ctx.font = "31px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("💧", x, y);
+    ctx.restore();
+}
+
+// Draw a heart power-up
+function drawHeart(x, y) {
+    ctx.save();
+    ctx.font = "30px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("❤️", x, y);
+    ctx.restore();
+}
+
+// Draw the player's tray
+function drawPlayer() {
+    const center = player.x + player.width / 2;
+
+    ctx.save();
+
+    // Tray shadow
+    ctx.fillStyle = "#d9a4a7";
+    ctx.beginPath();
+    ctx.ellipse(center, player.y + 23, player.width / 2 + 5, 7, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Tray body
+    ctx.fillStyle = "#e9a5b6";
+    ctx.beginPath();
+    ctx.roundRect(player.x, player.y, player.width, player.height, 9);
+    ctx.fill();
+
+    // Tray top
+    ctx.fillStyle = "#ffe0e8";
+    ctx.beginPath();
+    ctx.roundRect(player.x + 4, player.y - 5, player.width - 8, 10, 5);
+    ctx.fill();
+
+    // Decorative dots
+    ctx.fillStyle = "#fff8f8";
+    for (let i = 0; i < 4; i++) {
         ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, 17);
-        ctx.stroke();
-
-        ctx.fillStyle = "#ffdf91";
-        ctx.beginPath();
-        ctx.arc(x, 20, 6, 0, Math.PI * 2);
+        ctx.arc(player.x + 18 + i * 18, player.y + 11, 3, 0, Math.PI * 2);
         ctx.fill();
     }
 
-    // Plants
-    ctx.font = "25px sans-serif";
-    ctx.fillText("🌷", 20, HEIGHT - 35);
-    ctx.fillText("🌷", WIDTH - 45, HEIGHT - 35);
-
-    // Bakery floor mat
-    roundedRect(
-        WIDTH / 2 - 105,
-        HEIGHT - 35,
-        210,
-        12,
-        6,
-        "#d9b3df"
-    );
-
-    // Bottom border
-    ctx.fillStyle = "#e8cdb9";
-    ctx.fillRect(0, HEIGHT - 18, WIDTH, 18);
-
-    // Sparkles
-    ctx.font = "17px sans-serif";
-    ctx.fillText("✦", 105, 100);
-    ctx.fillText("✧", WIDTH - 110, 145);
-    ctx.fillText("✦", 100, HEIGHT - 100);
-    ctx.fillText("✧", WIDTH - 100, HEIGHT - 140);
-
-    // Power-up indicator
-    if (powerUpTimer > 0) {
-        roundedRect(12, 65, 165, 32, 12, "#f3d7f4");
-
-        ctx.fillStyle = "#784b8c";
-        ctx.font = "bold 13px system-ui";
-        ctx.textAlign = "left";
-
-        ctx.fillText(
-            `💖 BIG TRAY: ${Math.ceil(powerUpTimer)}s`,
-            20,
-            86
-        );
-    }
+    ctx.restore();
 }
 
-function drawPlayer() {
-    const currentWidth = powerUpTimer > 0 ? 100 : player.width;
-    const centerX = player.x + player.width / 2;
-    const trayX = centerX - currentWidth / 2;
-
-    // Tray shadow
-    roundedRect(
-        trayX,
-        player.y + 5,
-        currentWidth,
-        player.height,
-        12,
-        "#c18acb"
-    );
-
-    // Tray body
-    roundedRect(
-        trayX,
-        player.y,
-        currentWidth,
-        player.height,
-        12,
-        "#e6b9e8"
-    );
-
-    // Tray decoration
-    ctx.strokeStyle = "#a66bb5";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(trayX + 10, player.y + 8);
-    ctx.lineTo(trayX + currentWidth - 10, player.y + 8);
-    ctx.stroke();
-
-    ctx.font = "17px sans-serif";
-    ctx.textAlign = "center";
-    ctx.fillText("🍡", centerX, player.y - 7);
-}
-
-function drawObjects() {
-    ctx.textAlign = "center";
-
-    objects.forEach(object => {
-        ctx.font = `${object.size}px sans-serif`;
-        ctx.fillText(object.emoji, object.x, object.y);
-    });
-}
-
+// Draw everything on the canvas
 function drawGame() {
     drawBackground();
-    drawObjects();
+
+    if (!gameStarted) {
+        // Visible mochi before pressing Start
+        drawMochi(WIDTH / 2, HEIGHT / 2 - 15, 1.5);
+
+        ctx.fillStyle = "#c58b94";
+        ctx.font = "bold 15px Trebuchet MS";
+        ctx.textAlign = "center";
+        ctx.fillText("READY TO DELIVER SOME MOCHI?", WIDTH / 2, HEIGHT / 2 + 45);
+    }
+
+    objects.forEach(object => {
+        if (object.type === "mochi") {
+            drawMochi(object.x, object.y);
+        } else if (object.type === "puddle") {
+            drawPuddle(object.x, object.y);
+        } else if (object.type === "heart") {
+            drawHeart(object.x, object.y);
+        }
+    });
+
     drawPlayer();
-
-    if (!gameRunning && !gameOver) {
-        ctx.fillStyle = "rgba(255,255,255,0.55)";
-        ctx.fillRect(0, 115, WIDTH, 110);
-
-        ctx.fillStyle = "#9259a8";
-        ctx.textAlign = "center";
-        ctx.font = "bold 25px Georgia";
-        ctx.fillText("Welcome to Mochi Bakery!", WIDTH / 2, 160);
-
-        ctx.font = "16px Georgia";
-        ctx.fillText("Press Start Game to play!", WIDTH / 2, 190);
-    }
-
-    if (gameOver) {
-        ctx.fillStyle = "rgba(255, 248, 252, 0.85)";
-        ctx.fillRect(0, 0, WIDTH, HEIGHT);
-
-        ctx.textAlign = "center";
-        ctx.fillStyle = "#9259a8";
-        ctx.font = "bold 32px Georgia";
-        ctx.fillText("Game Over!", WIDTH / 2, 170);
-
-        ctx.font = "20px Georgia";
-        ctx.fillText(`Final Score: ${score}`, WIDTH / 2, 210);
-
-        ctx.font = "16px Georgia";
-        ctx.fillText("Press Restart to play again!", WIDTH / 2, 245);
-    }
 }
 
+// Create falling objects
 function spawnObject() {
     const random = Math.random();
-
     let type = "mochi";
-    let emoji = "🍡";
 
-    if (random < 0.22) {
+    if (random < 0.18) {
         type = "puddle";
-        emoji = "💧";
-    } else if (random < 0.32) {
-        type = "powerup";
-        emoji = "💖";
+    } else if (random > 0.91) {
+        type = "heart";
     }
-
-    const size = type === "powerup" ? 27 : 29;
 
     objects.push({
         x: 25 + Math.random() * (WIDTH - 50),
-        y: -20,
-        size,
-        speed: 2.2 + Math.random() * 1.2 + elapsedTime * 0.045,
-        type,
-        emoji
+        y: -30,
+        type: type,
+        speed: 2.2 + Math.random() * 1.5 + score / 180
     });
 }
 
+// Move player
 function updatePlayer() {
     if (keys.left) {
         player.x -= player.speed;
@@ -276,215 +221,226 @@ function updatePlayer() {
         player.x += player.speed;
     }
 
-    const currentWidth = powerUpTimer > 0 ? 100 : player.width;
-    const centerX = player.x + player.width / 2;
+    player.x = Math.max(
+        0,
+        Math.min(WIDTH - player.width, player.x)
+    );
 
-    if (centerX - currentWidth / 2 < 0) {
-        player.x = currentWidth / 2 - player.width / 2;
-    }
-
-    if (centerX + currentWidth / 2 > WIDTH) {
-        player.x = WIDTH - currentWidth / 2 - player.width / 2;
+    if (Date.now() > player.powerUpUntil) {
+        player.width = player.normalWidth;
     }
 }
 
+// Check collision
+function checkCollision(object) {
+    const objectSize = 18;
+
+    return (
+        object.x + objectSize > player.x &&
+        object.x - objectSize < player.x + player.width &&
+        object.y + objectSize > player.y &&
+        object.y - objectSize < player.y + player.height
+    );
+}
+
+// Lose one life
 function loseLife() {
-    if (invincibleTimer > 0) return;
-
     lives--;
-    invincibleTimer = 0.8;
-
     updateStats();
 
     if (lives <= 0) {
-        endGame("You ran out of lives!");
+        endGame("Game Over! 💔");
     }
 }
 
+// Update falling objects
 function updateObjects(delta) {
-    const currentWidth = powerUpTimer > 0 ? 100 : player.width;
-    const trayLeft = player.x + player.width / 2 - currentWidth / 2;
-    const trayRight = trayLeft + currentWidth;
+    for (let i = objects.length - 1; i >= 0; i--) {
+        const object = objects[i];
 
-    objects.forEach(object => {
         object.y += object.speed * delta;
 
-        const objectLeft = object.x - object.size / 2;
-        const objectRight = object.x + object.size / 2;
-
-        const touchingTray =
-            object.y >= player.y &&
-            object.y <= player.y + player.height + object.size / 2 &&
-            objectRight >= trayLeft &&
-            objectLeft <= trayRight;
-
-        if (touchingTray) {
+        if (checkCollision(object)) {
             if (object.type === "mochi") {
                 score += 10;
-                message.textContent = "Yummy! +10 points! 🍡";
             } else if (object.type === "puddle") {
                 loseLife();
-                message.textContent = "Oh no! You hit a puddle! 💧";
-            } else if (object.type === "powerup") {
-                powerUpTimer = 8;
-                message.textContent = "Big tray activated! 💖";
+            } else if (object.type === "heart") {
+                player.width = 140;
+                player.x = Math.max(
+                    0,
+                    Math.min(WIDTH - player.width, player.x)
+                );
+                player.powerUpUntil = Date.now() + 8000;
             }
 
-            object.remove = true;
+            objects.splice(i, 1);
+            updateStats();
+
+            if (!gameRunning) return;
+            continue;
         }
 
-        // Missed mochi
-        if (object.type === "mochi" && object.y > HEIGHT) {
-            loseLife();
-            message.textContent = "You missed a mochi! 🍡";
-            object.remove = true;
-        }
+        if (object.y > HEIGHT + 35) {
+            if (object.type === "mochi") {
+                loseLife();
+            }
 
-        if (object.y > HEIGHT + 40) {
-            object.remove = true;
-        }
-    });
+            objects.splice(i, 1);
 
-    objects = objects.filter(object => !object.remove);
+            if (!gameRunning) return;
+        }
+    }
 }
 
+// Update score, lives and timer
 function updateStats() {
-    scoreDisplay.textContent = score;
-    livesDisplay.textContent = lives;
-    timerDisplay.textContent = Math.max(0, Math.ceil(timeLeft));
+    scoreText.textContent = score;
+    livesText.textContent = lives;
+    timerText.textContent = timeLeft;
 }
 
-function endGame(reason) {
+// End the game
+function endGame(title) {
     gameRunning = false;
-    gameOver = true;
+    gameStarted = false;
 
-    message.textContent = `${reason} Final score: ${score}`;
+    if (animationId !== null) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+    }
 
-    cancelAnimationFrame(animationId);
+    message.innerHTML = `
+        <h2>${title}</h2>
+        <p>Your final score: <strong>${score}</strong></p>
+        <p>Press Restart to play again!</p>
+    `;
+
+    message.classList.remove("hidden");
+    startBtn.textContent = "▶ PLAY AGAIN";
+
     drawGame();
 }
 
+// Main game loop
 function gameLoop(timestamp) {
     if (!gameRunning) return;
 
-    const delta = Math.min((timestamp - lastTime) / 16.67 || 1, 2);
+    if (!lastTime) lastTime = timestamp;
+
+    let delta = (timestamp - lastTime) / 16.67;
+    delta = Math.min(delta, 2);
     lastTime = timestamp;
 
-    const seconds = delta / 60;
+    elapsedTime += delta / 60;
+    spawnTimer += delta;
 
-    elapsedTime += seconds;
-    timeLeft -= seconds;
+    // Spawn objects more frequently over time
+    const spawnDelay = Math.max(25, 65 - score / 15);
 
-    if (powerUpTimer > 0) {
-        powerUpTimer -= seconds;
-    }
-
-    if (invincibleTimer > 0) {
-        invincibleTimer -= seconds;
-    }
-
-    updatePlayer();
-
-    spawnTimer += seconds;
-
-    const spawnInterval = Math.max(
-        0.35,
-        0.95 - elapsedTime * 0.012
-    );
-
-    if (spawnTimer >= spawnInterval) {
+    if (spawnTimer >= spawnDelay) {
         spawnObject();
         spawnTimer = 0;
     }
 
-    updateObjects(delta);
-    updateStats();
-
-    if (timeLeft <= 0) {
-        timeLeft = 0;
+    // Countdown timer
+    if (elapsedTime >= 1) {
+        timeLeft--;
+        elapsedTime = 0;
         updateStats();
-        endGame("Time is up!");
-        return;
+
+        if (timeLeft <= 0) {
+            endGame("Time's Up! ⏰");
+            return;
+        }
     }
 
-    drawGame();
+    updatePlayer();
+    updateObjects(delta);
 
+    if (!gameRunning) return;
+
+    drawGame();
     animationId = requestAnimationFrame(gameLoop);
 }
 
+// Start game
 function startGame() {
     if (gameRunning) return;
 
-    if (gameOver) {
+    if (!gameStarted) {
         resetGame();
     }
 
     gameRunning = true;
-    gameOver = false;
-    lastTime = performance.now();
+    gameStarted = true;
+    lastTime = 0;
 
-    message.textContent = "Catch those delicious mochis! 🍡";
+    message.classList.add("hidden");
+    startBtn.textContent = "▶ GAME RUNNING";
 
     animationId = requestAnimationFrame(gameLoop);
 }
 
+// Reset game values
 function resetGame() {
-    cancelAnimationFrame(animationId);
+    if (animationId !== null) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+    }
 
     score = 0;
     lives = 3;
     timeLeft = 45;
 
     objects = [];
-
-    player.x = WIDTH / 2 - player.width / 2;
-
-    gameRunning = false;
-    gameOver = false;
-
     spawnTimer = 0;
     elapsedTime = 0;
-    powerUpTimer = 0;
-    invincibleTimer = 0;
+    lastTime = 0;
+
+    player.width = player.normalWidth;
+    player.x = WIDTH / 2 - player.width / 2;
+    player.powerUpUntil = 0;
 
     keys.left = false;
     keys.right = false;
 
-    message.textContent = "Press Start Game to begin!";
+    gameRunning = false;
+    gameStarted = false;
 
     updateStats();
+
+    message.innerHTML = `
+        <h2>🍡 Mochi Delivery! 🍡</h2>
+        <p>Catch the falling mochi!</p>
+        <p class="hint">Use ← → or A / D to move</p>
+    `;
+
+    message.classList.remove("hidden");
+    startBtn.textContent = "▶ START GAME";
+
     drawGame();
 }
 
 // Keyboard controls
 document.addEventListener("keydown", event => {
-    const key = event.key.toLowerCase();
-
-    if (
-        key === "arrowleft" ||
-        key === "arrowright" ||
-        key === " "
-    ) {
+    if (event.key === "ArrowLeft" || event.key.toLowerCase() === "a") {
+        keys.left = true;
         event.preventDefault();
     }
 
-    if (key === "arrowleft" || key === "a") {
-        keys.left = true;
-    }
-
-    if (key === "arrowright" || key === "d") {
+    if (event.key === "ArrowRight" || event.key.toLowerCase() === "d") {
         keys.right = true;
+        event.preventDefault();
     }
 });
 
 document.addEventListener("keyup", event => {
-    const key = event.key.toLowerCase();
-
-    if (key === "arrowleft" || key === "a") {
+    if (event.key === "ArrowLeft" || event.key.toLowerCase() === "a") {
         keys.left = false;
     }
 
-    if (key === "arrowright" || key === "d") {
+    if (event.key === "ArrowRight" || event.key.toLowerCase() === "d") {
         keys.right = false;
     }
 });
@@ -512,7 +468,7 @@ function holdButton(button, direction) {
 holdButton(leftBtn, "left");
 holdButton(rightBtn, "right");
 
-// Game buttons
+// Button events
 startBtn.addEventListener("click", startGame);
 
 restartBtn.addEventListener("click", () => {
