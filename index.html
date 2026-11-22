@@ -1,31 +1,66 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mochi Delivery</title>
-    <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mochi Delivery</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<main class="wrap">
-  <h1>🍡 Mochi Delivery</h1>
-  <p class="sub">Catch the mochi. Dodge the puddles. Make every delivery count!</p>
-  <section class="panel">
-    <div class="stats">
-      <div class="stat">Score: <span id="score">0</span></div>
-      <div class="stat">Lives: <span id="lives">3</span> ❤️</div>
-      <div class="stat">Time: <span id="time">45</span>s</div>
-    </div>
-    <canvas id="game" width="560" height="420" aria-label="Mochi Delivery game area"></canvas>
-    <button id="start">Start Game</button>
-    <button id="restart">Restart</button>
-    <div class="touch">
-      <button id="left" aria-label="Move left">◀</button>
-      <button id="right" aria-label="Move right">▶</button>
-    </div>
-    <p class="controls">Controls: ← → arrow keys or A / D. On mobile, use the buttons.</p>
-  </section>
-</main>
-    <script src="js/script.js" defer></script>
+
+    <main class="wrap">
+
+        <h1>🍡 Mochi Delivery</h1>
+        <p class="sub">
+            Catch the mochi. Dodge the puddles. Make every delivery count!
+        </p>
+
+        <section class="panel">
+
+            <div class="stats">
+                <div class="stat">
+                    Score: <span id="score">0</span>
+                </div>
+
+                <div class="stat">
+                    Lives: <span id="lives">3</span> ❤️
+                </div>
+
+                <div class="stat">
+                    Time: <span id="time">45</span>s
+                </div>
+            </div>
+
+            <canvas
+                id="game"
+                width="560"
+                height="420"
+                aria-label="Mochi Delivery game area">
+            </canvas>
+
+            <button id="start">Start Game</button>
+            <button id="restart">Restart</button>
+
+            <div class="touch">
+                <button id="left" aria-label="Move left">◀</button>
+                <button id="right" aria-label="Move right">▶</button>
+            </div>
+
+            <p class="controls">
+                Controls: ← → arrow keys or A / D.
+                On mobile, use the buttons.
+            </p>
+
+        </section>
+
+    </main>
+
+    <!-- JavaScript -->
+    <script src="script.js" defer></script>
+
 </body>
 </html>
